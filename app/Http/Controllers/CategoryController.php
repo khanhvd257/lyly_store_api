@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+class CategoryController extends Controller
+{
+    /**
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
+    {
+        $categories = Category::all();
+        $totalRecords = Category::count();
+        return response()->json([
+            'status'=> true,
+            'total' => $totalRecords,
+            'data' => $categories,
+            ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        if (!$request->has('name')) {
+            return response()->json(['error' => 'Trường "name" là bắt buộc.'], 400); // 400 là mã lỗi "Bad Request"
+        }
+        // Tạo danh mục mới
+        $category = Category::create($request->all());
+        return response()->json(
+            [
+                'data' => $category,
+                'status' => true,
+                'code' => 201
+            ], 201);
+    }
+
+    /**
+     * @param Category $category
+     * @return JsonResponse
+     */
+    public function show(Category $category): JsonResponse
+    {
+        $category = Category::find($category);
+        if (!$category) {
+            return response()->json(['message' => 'Danh mục không tồn tại'], 404);
+        }
+        // Hiển thị danh mục cụ thể
+        return response()->json(['data' => $category]);
+    }
+
+    public function changeStatus($id, Request $request)
+    {
+        $category = Category::where('id', $id)->where('delete_flag',0)->orWhere('delete_flag',1)->first();
+
+        if (!$category) {
+            return response()->json(['message' => 'danh muc không tồn tại'], 404);
+        }
+
+        $category->delete_flag = $request->input('delete_flag');
+        $category->save();
+        return response()->json(['message' => 'Cập nhật trạng thái sản phẩm thành công'],201);
+    }
+
+    /**
+     * @param Request $request
+     * @param Category $category
+     * @return JsonResponse
+     */
+    public function update(Request $request, Category $category): JsonResponse
+    {
+        // Cập nhật danh mục
+        $category->update($request->all());
+        return response()->json(['data' => $category]);
+    }
+
+    /**
+     * @param Category $category
+     * @return Application|ResponseFactory|Response
+     */
+    public function destroy(Category $category)
+    {
+        // Xóa danh mục
+        $category->delete();
+        return response(null, 204);
+    }
+}
