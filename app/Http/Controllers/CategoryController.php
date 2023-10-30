@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Product;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
@@ -15,15 +14,25 @@ class CategoryController extends Controller
     /**
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request)
     {
-        $categories = Category::all();
-        $totalRecords = Category::count();
+        $query = Category::query();
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        $category = $query->get();
+        $category = $category->map(function ($category) {
+            if ($category->image_name) {
+                $category->image_url = url('storage/images/' . $category->image_name);
+            }
+            return $category;
+        });
+        $total = $category->count();
         return response()->json([
-            'status'=> true,
-            'total' => $totalRecords,
-            'data' => $categories,
-            ]);
+            'status' => true,
+            'total' => $total,
+            'data' => $category]);
     }
 
     /**

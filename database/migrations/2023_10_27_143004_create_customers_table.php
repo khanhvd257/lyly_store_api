@@ -21,9 +21,9 @@ class CreateCustomersTable extends Migration
             $table->string('phone', 12)->nullable();
             $table->string('email')->nullable();
             $table->boolean('delete_flag')->default(false);
-            $table->boolean('status')->default(true);
             $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();        });
+            $table->timestamp('updated_at')->useCurrent();
+        });
     }
 
     /**

@@ -15,8 +15,8 @@ class CustomerController extends Controller
     {
         $query = Customer::query();
 
-        if ($request->has('category_id')) {
-            $query->where('category_id', $request->input('category'));
+        if ($request->has('phone')) {
+            $query->where('phone', $request->input('phone'));
         }
 
         if ($request->has('name')) {
@@ -27,7 +27,7 @@ class CustomerController extends Controller
         $total = $customers->count();
 
         return response()->json([
-            'status'=>true,
+            'status' => true,
             'total' => $total,
             'data' => $customers]);
     }

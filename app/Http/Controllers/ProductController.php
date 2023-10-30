@@ -34,8 +34,13 @@ class ProductController extends Controller
         }
 
         $products = $query->get();
+        $products = $products->map(function ($product) {
+            if ($product->image_url) {
+                $product->image_url = url('storage/images/' . $product->image_url);
+            }
+            return $product;
+        });
         $total = $products->count();
-
         return response()->json([
             'status' => true,
             'total' => $total,
@@ -51,7 +56,7 @@ class ProductController extends Controller
     {
         $validated = $request->validated();
         if ($validated['image_url']) {
-            $image = $validated['image_url'];
+            $image = basename($validated['image_url']);
             $sourcePath = public_path('storage/temp/' . $image);
             $destinationPath = public_path('storage/images/');
             $newFilename = basename($sourcePath);
@@ -64,7 +69,7 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
         if ($product) {
-            $product['image_url'] = url('storage/images/'. $product['image_url']);
+            $product['image_url'] = url('storage/images/' . $product['image_url']);
             return response()->json(['message' => 'Product created successfully',
                 'data' => $product], 201);
         } else {

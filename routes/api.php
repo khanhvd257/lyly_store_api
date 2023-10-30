@@ -27,8 +27,10 @@ Route::middleware('auth:api')->group(function () {
     //api  category
     Route::apiResource('category', 'CategoryController');
     Route::put('/category/{id}/status', 'CategoryController@changeStatus');
-
     Route::post('logout','AuthController@logout');
+    Route::post('upload', 'UploadController@upload');
+    Route::apiResource('user', 'UserController');
+
 });
 
 
@@ -36,11 +38,14 @@ Route::middleware('auth:api')->group(function () {
 Route::apiResource('customer', 'CustomerController');
 
 //api account
-Route::apiResource('user', 'UserController');
 Route::post('register', 'AuthController@register');
 Route::post('login', 'AuthController@login');
-Route::post('upload', 'UploadController@upload');
 
 
+//api lấy tỉnh
+
+Route::get('provices', 'AddressController@index');
+Route::get('districts', 'AddressController@getDistrictByProvince');
+Route::get('wards', 'AddressController@getWardsByDistrict');
 
 
