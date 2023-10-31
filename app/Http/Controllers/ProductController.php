@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductCreate;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use mysql_xdevapi\Exception;
+use Laravel\Passport\Passport;
 
 /**
  *
@@ -24,26 +26,24 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::query();
-
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            $query->where('status', $status);
+        }
         if ($request->has('category_id')) {
-            $query->where('category_id', $request->input('category'));
+            $query->where('category_id', $request->input('category_id'));
         }
 
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
-
+        $user = Auth::guard('api')->user();
         $products = $query->get();
-        $products = $products->map(function ($product) {
-            if ($product->image_url) {
-                $product->image_url = url('storage/images/' . $product->image_url);
-            }
-            return $product;
-        });
         $total = $products->count();
         return response()->json([
             'status' => true,
             'total' => $total,
+            'token' => $user,
             'data' => $products]);
     }
 
@@ -71,6 +71,7 @@ class ProductController extends Controller
         if ($product) {
             $product['image_url'] = url('storage/images/' . $product['image_url']);
             return response()->json(['message' => 'Product created successfully',
+                'status' => $validated['status'],
                 'data' => $product], 201);
         } else {
             return response()->json(['message' => 'Lỗi hệ thống',
@@ -86,13 +87,12 @@ class ProductController extends Controller
     public function show(Product $product): JsonResponse
     {
         $product = Product::find($product->id);
+        $category = Category::find($product['category_id']);
         if ($product) {
-            return response()->json([
-                'status' => true,
-
-                'data' => $product]);
+            $product->category = $category;
+            return $this->sendResponse($product, 'Lấy thông tin thành công',);
         } else {
-            return response()->json(['message' => 'Sản phẩm không tồn tại.'], 404);
+            return $this->sendError('Không có thông tin sản phẩm', 400);
         }
     }
 

@@ -15,11 +15,9 @@ class AuthController extends Controller
     {
         $validated = $request->validated();
         if (Auth::attempt($validated)) {
-            $response['userInfo'] = Auth::user();
-                $response['token'] = $response['userInfo']->createToken('lyly_store')->accessToken;
+            $response['token'] = Auth::user()->createToken('lyly_store')->accessToken;
             return $this->sendResponse($response, 'Đăng nhập thành công');
         } else {
-//            return response()->json(['status'=> false, 'message'=>'Đăng nhập thất bại']);
             return $this->sendError('Đăng nhập thất bại');
         }
     }
@@ -39,9 +37,13 @@ class AuthController extends Controller
 
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
-        $request-> user()->token() -> revoke();
+        $request->user()->token()->revoke();
         return response()->json([
             'message' => 'Successfully logged out'
         ]);

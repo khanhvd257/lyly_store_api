@@ -32,6 +32,8 @@ class ProductCreate extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:1',
             'image_url' => 'nullable|string',
+            'status' => 'nullable|boolean',
+
         ];
     }
 

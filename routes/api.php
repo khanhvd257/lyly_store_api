@@ -43,9 +43,9 @@ Route::post('login', 'AuthController@login');
 
 
 //api lấy tỉnh
-
 Route::get('provices', 'AddressController@index');
 Route::get('districts', 'AddressController@getDistrictByProvince');
 Route::get('wards', 'AddressController@getWardsByDistrict');
+
 
 
