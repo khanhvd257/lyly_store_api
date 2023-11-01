@@ -37,13 +37,11 @@ class ProductController extends Controller
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
-        $user = Auth::guard('api')->user();
         $products = $query->get();
         $total = $products->count();
         return response()->json([
             'status' => true,
             'total' => $total,
-            'token' => $user,
             'data' => $products]);
     }
 

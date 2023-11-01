@@ -11,12 +11,18 @@ class Cart extends Model
 
     protected $fillable = ['product_id', 'quantity', 'username', 'total'];
 
+    // Định nghĩa mối quan hệ "productDetail" để dùng eager loading with()
+    public function productDetail()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
     protected static function boot()
     {
         parent::boot();
         static::addGlobalScope('active', function ($builder) {
             if (request()->method() !== 'PUT')
-                $builder->where('delete_flag', 0);
+                $builder->where('carts.delete_flag', 0);
             $builder->orderBy('created_at', 'desc');
         });
     }

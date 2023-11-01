@@ -15,6 +15,19 @@ class CartController extends Controller
 
     /**
      *
+     * API LẤY DANH SÁCH MUA HÀNG CHO NGƯỜI MUA
+     * @return JsonResponse
+     */
+    public function getCartByUsername()
+    {
+        $username = Auth::guard('api')->user()['username'];
+        $cartList = Cart::where('username', $username)->with('productDetail')->get();
+        if ($cartList) return $this->sendResponse($cartList, 'Lấy danh sách giỏ hàng thành công');
+        return $this->sendError('Không tìm thấy giỏ hàng');
+    }
+
+    /**
+     *
      * API THÊM GIỎ HÀNG
      *
      * @param CartValidation $request

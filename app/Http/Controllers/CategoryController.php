@@ -8,6 +8,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 
 class CategoryController extends Controller
 {
@@ -44,8 +45,24 @@ class CategoryController extends Controller
         if (!$request->has('name')) {
             return response()->json(['error' => 'Trường "name" là bắt buộc.'], 400); // 400 là mã lỗi "Bad Request"
         }
+        if ($request['image_url']) {
+            $image = basename($request['image_url']);
+            $sourcePath = public_path('storage/temp/' . $image);
+            $destinationPath = public_path('storage/images/');
+            File::move($sourcePath, $destinationPath . $image);
+            $request['image_url'] = $image;
+            File::delete(public_path($sourcePath));
+        } else {
+            $request['image_url'] = null;
+        }
+        $data = [
+            'image_name' => $request['image_url'],
+            'name' => $request['name'],
+            'description' => $request['description'],
+            'status' => $request['status'],
+        ];
         // Tạo danh mục mới
-        $category = Category::create($request->all());
+        $category = Category::create($data);
         return response()->json(
             [
                 'data' => $category,
@@ -70,7 +87,7 @@ class CategoryController extends Controller
 
     public function changeStatus($id, Request $request)
     {
-        $category = Category::where('id', $id)->where('delete_flag',0)->orWhere('delete_flag',1)->first();
+        $category = Category::where('id', $id)->where('delete_flag', 0)->orWhere('delete_flag', 1)->first();
 
         if (!$category) {
             return response()->json(['message' => 'danh muc không tồn tại'], 404);
@@ -78,7 +95,7 @@ class CategoryController extends Controller
 
         $category->delete_flag = $request->input('delete_flag');
         $category->save();
-        return response()->json(['message' => 'Cập nhật trạng thái sản phẩm thành công'],201);
+        return response()->json(['message' => 'Cập nhật trạng thái sản phẩm thành công'], 201);
     }
 
     /**

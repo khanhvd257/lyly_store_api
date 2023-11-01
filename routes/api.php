@@ -34,8 +34,13 @@ Route::middleware('auth:api')->group(function () {
     //API GIỎ HÀNG
     Route::post('cart', 'CartController@addToCart');
     Route::put('cart', 'CartController@updateCart');
-    Route::delete('cart/{id}','CartController@removeCart');
+    Route::delete('cart/{id}', 'CartController@removeCart');
+    Route::get('cart', 'CartController@getCartByUsername');
 
+
+    //API ĐẶT HÀNG
+
+    Route::post('order', 'OrderController@orderProduct');
 
 });
 
