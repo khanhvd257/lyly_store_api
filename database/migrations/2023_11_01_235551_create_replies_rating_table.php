@@ -4,14 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRatingRepliesTable extends Migration
+class CreateRepliesRatingTable extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         Schema::create('rating_replies', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('rating_id');
-            $table->unsignedBigInteger('username');
+            $table->string('username');
             $table->text('reply');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

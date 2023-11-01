@@ -47,6 +47,8 @@ Route::middleware('auth:api')->group(function () {
     // API ĐÁNH GIÁ ĐƠN HÀNG SAU KHI HOÀN THÀNH
     Route::post('rating', 'RatingsController@createRating');
 
+    Route::post('reply-rating', 'ReplyRatingController@replyRating');
+
     //API XEM DANH SÁCH TẤT CẢ ĐƠN HÀNG PHÍA NGƯỜI BÁN
     Route::get('orders', 'OrderController@getAllOrder');
 });

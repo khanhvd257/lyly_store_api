@@ -15,7 +15,7 @@ class ReplyRatingValidation extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,9 +26,8 @@ class ReplyRatingValidation extends FormRequest
     public function rules()
     {
         return [
-            'product_id' => 'required|integer',
-            'comment' => 'nullable|string',
-            'image_url' => 'nullable|string',
+            'rating_id' => 'required|integer',
+            'reply' => 'required|string',
         ];
     }
 
