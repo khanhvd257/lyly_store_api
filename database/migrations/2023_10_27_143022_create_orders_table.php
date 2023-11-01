@@ -16,8 +16,8 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('username');
-            $table->dateTime('order_date');
-            $table->string('note');
+            $table->dateTime('order_date')->useCurrent();
+            $table->string('note')->nullable();
             $table->string('delivery_address');
             $table->boolean('delete_flag')->default(false);
             $table->string('status', 50);

@@ -18,8 +18,8 @@ class CreateAccountsTable extends Migration
             $table->string('username');
             $table->string('password');
             $table->boolean('delete_flag')->default(false);
-            $table->boolean('status');
-            $table->boolean('role');
+            $table->boolean('status')->default(true);
+            $table->boolean('role')->default(false);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });

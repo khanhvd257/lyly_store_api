@@ -26,7 +26,7 @@ class AccountRegister extends FormRequest
     {
         return [
             'username' => 'required|string|unique:accounts|min:6',
-            'password' => 'required|string|confirmed|min:8',
+            'password' => 'required|string|confirmed|min:6',
         ];
     }
 

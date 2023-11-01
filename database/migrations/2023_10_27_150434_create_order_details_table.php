@@ -20,10 +20,10 @@ class CreateOrderDetailsTable extends Migration
             $table->integer('quantity');
             $table->decimal('price', 10, 0);
             $table->boolean('delete_flag')->default(false);
-            $table->foreign('order_id')->references('id')->on('orders');
-            $table->foreign('product_id')->references('id')->on('products');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
+            $table->foreign('order_id')->references('id')->on('orders');
+            $table->foreign('product_id')->references('id')->on('products');
         });
     }
 

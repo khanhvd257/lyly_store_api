@@ -24,7 +24,6 @@ class CreateCartsTable extends Migration
             $table->timestamp('updated_at')->useCurrent();
             $table->foreign('product_id')->references('id')->on('products');
 //            $table->foreign('username')->references('username')->on('customer');
-
         });
     }
 

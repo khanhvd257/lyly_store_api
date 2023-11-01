@@ -17,7 +17,7 @@ class CreateRatingsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->string('username');
-            $table->integer('rating');
+            $table->integer('rating')->default(5);
             $table->text('comment')->nullable();
             $table->boolean('delete_flag')->default(false);
             $table->foreign('product_id')->references('id')->on('products');
