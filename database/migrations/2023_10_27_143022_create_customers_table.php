@@ -24,7 +24,7 @@ class CreateCustomersTable extends Migration
             $table->boolean('delete_flag')->default(false);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
-            $table->foreign('username')->references('username')->on('accounts');
+//            $table->foreign('username')->references('username')->on('accounts');
         });
     }
 

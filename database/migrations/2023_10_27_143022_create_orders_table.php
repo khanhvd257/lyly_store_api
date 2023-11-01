@@ -23,7 +23,7 @@ class CreateOrdersTable extends Migration
             $table->string('status', 50);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
-            $table->foreign('username')->references('username')->on('accounts');
+//            $table->foreign('username')->references('username')->on('accounts');
         });
     }
 
