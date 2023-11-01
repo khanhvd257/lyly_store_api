@@ -21,7 +21,7 @@ class CreateOrdersTable extends Migration
             $table->string('delivery_address');
             $table->boolean('delete_flag')->default(false);
             $table->string('status', 50);
-//            $table->foreign('username')->references('username')->on('accounts');
+//            $table->foreign('customer_id')->references('id')->on('customers');
         });
     }
 

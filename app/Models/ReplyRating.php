@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Ratings extends Model
+class ReplyRating extends Model
 {
+    protected $table = "rating_replies";
     use HasFactory;
-
-    protected $fillable = ['product_id', 'username', 'rating', 'comment', 'image_name'];
+    protected $fillable = ['rating_id ', 'username', 'reply'];
 }

@@ -39,9 +39,16 @@ Route::middleware('auth:api')->group(function () {
 
 
     //API ĐẶT HÀNG
-
     Route::post('order', 'OrderController@orderProduct');
+    Route::put('order/{id}/confirmed', 'OrderController@confirmOrder');
+    Route::put('order/{id}/cancel', 'OrderController@cancelOrder');
+    Route::put('order/{id}/done', 'OrderController@doneOrder');
 
+    // API ĐÁNH GIÁ ĐƠN HÀNG SAU KHI HOÀN THÀNH
+    Route::post('rating', 'RatingsController@createRating');
+
+    //API XEM DANH SÁCH TẤT CẢ ĐƠN HÀNG PHÍA NGƯỜI BÁN
+    Route::get('orders', 'OrderController@getAllOrder');
 });
 
 

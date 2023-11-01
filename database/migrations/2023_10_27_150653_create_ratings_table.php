@@ -17,12 +17,15 @@ class CreateRatingsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->string('username');
+            $table->string('image_name')->nullable();
             $table->integer('rating')->default(5);
             $table->text('comment')->nullable();
             $table->boolean('delete_flag')->default(false);
-            $table->foreign('product_id')->references('id')->on('products');
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->foreign('parent_id')->references('id')->on('ratings');
         });
     }
 
