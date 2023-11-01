@@ -27,12 +27,17 @@ Route::middleware('auth:api')->group(function () {
     //api  category
     Route::apiResource('category', 'CategoryController');
     Route::put('/category/{id}/status', 'CategoryController@changeStatus');
-    Route::post('logout','AuthController@logout');
+    Route::post('logout', 'AuthController@logout');
     Route::post('upload', 'UploadController@upload');
     Route::apiResource('user', 'UserController');
 
-});
+    //API GIỎ HÀNG
+    Route::post('cart', 'CartController@addToCart');
+    Route::put('cart', 'CartController@updateCart');
+    Route::delete('cart/{id}','CartController@removeCart');
 
+
+});
 
 
 Route::apiResource('customer', 'CustomerController');
@@ -46,6 +51,5 @@ Route::post('login', 'AuthController@login');
 Route::get('provices', 'AddressController@index');
 Route::get('districts', 'AddressController@getDistrictByProvince');
 Route::get('wards', 'AddressController@getWardsByDistrict');
-
 
 

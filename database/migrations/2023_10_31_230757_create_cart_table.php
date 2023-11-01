@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAccountsTable extends Migration
+class Cart extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,18 @@ class CreateAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('accounts', function (Blueprint $table) {
+        Schema::create('cart', function (Blueprint $table) {
             $table->id();
             $table->string('username');
-            $table->string('password');
+            $table->unsignedBigInteger('product_id');
+            $table->integer('quantity');
+            $table->double('total');
             $table->boolean('delete_flag')->default(false);
-            $table->boolean('status');
-            $table->boolean('role');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
-            $table->primary(['id', 'username']);
+            $table->foreign('product_id')->references('id')->on('products');
+//            $table->foreign('username')->references('username')->on('customer');
+
         });
     }
 
@@ -33,6 +35,6 @@ class CreateAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('cart');
     }
 }

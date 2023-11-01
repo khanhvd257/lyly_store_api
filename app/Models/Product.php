@@ -29,9 +29,22 @@ class Product extends Model
 
     }
 
-    function getImagePathAttributes()
+
+    /**
+     * Kiểm tra số lượng trong kho hàng
+     * @param $quantity
+     * @return bool
+     */
+    public function isAvailableInStock($quantity): bool
     {
-        return url('storage/images/' . $this->image_url);
+        // Lấy số lượng tồn kho của sản phẩm từ bảng Product
+        $product = Product::find($this->product_id);
+
+        if ($product) {
+            return $quantity <= $product['quantity'];
+        }
+
+        return false;
     }
 
 }

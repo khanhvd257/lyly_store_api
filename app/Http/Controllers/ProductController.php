@@ -142,7 +142,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Xóa danh mục
         $product->delete();
         return response(null, 204);
     }
