@@ -22,7 +22,6 @@ class CreateAccountsTable extends Migration
             $table->boolean('role');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
-            $table->primary(['id', 'username']);
         });
     }
 

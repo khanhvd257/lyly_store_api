@@ -17,6 +17,8 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->string('username');
             $table->dateTime('order_date');
+            $table->string('note');
+            $table->string('delivery_address');
             $table->boolean('delete_flag')->default(false);
             $table->string('status', 50);
             $table->timestamp('created_at')->useCurrent();
