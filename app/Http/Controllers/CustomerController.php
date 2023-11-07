@@ -134,4 +134,8 @@ class CustomerController extends Controller
         return response(null, 204);
     }
 
+    public function getInfoUser(Request $request){
+        echo "Hello";
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AccountLogin;
 use App\Http\Requests\AccountRegister;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -47,5 +48,14 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
+    }
+
+    public function getInfoUser(Request $request)
+    {
+        $username = Auth::guard('api')->user();
+        $userInfo = Customer::where('username', $username['username'])->first();
+        $data['info'] = $userInfo;
+        $data['account'] = $username;
+        return $this->sendResponse($data, 'Lấy thông tin thành công');
     }
 }

@@ -73,15 +73,24 @@ class OrderController extends Controller
 
     }
 
+    public function getDetailOrder($id)
+    {
+        $orders = OrderDetail::with('order')->with('product')->where('order_id', $id)->first();
+        if (!$orders) return $this->sendError('Không tìm thấy đơn hàng');
+        return $this->sendResponse($orders, 'Lấy thông tin thành công');
+
+
+    }
+
+
+    /**
+     * Lấy danh sách tất cả order cho người bán
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getAllOrder()
 
     {
-//        $orders = DB::table('orders')
-//            ->join('order_details', 'orders.id', '=', 'order_details.order_id')
-//            ->join('products', 'order_details.product_id', '=', 'products.id')
-//            ->join('customers', 'orders.username', '=', 'customers.username')
-//            ->select('orders.*', 'order_details.*', 'products.*', 'customers.*')
-//            ->get();
         $orders = OrderDetail::with('product')->with('order')->get();
         return $this->sendResponse($orders, 'Lấy dữ liệu thành công');
     }
@@ -119,5 +128,31 @@ class OrderController extends Controller
             return $this->sendError('Xảy ra lỗi khi đặt hàng');
 
         }
+    }
+
+    public function getOrderByUser()
+    {
+        $username = Auth::guard('api')->user()['username'];
+
+        $orders = DB::table('orders as o')
+            ->join('order_details as od', 'o.id', '=', 'od.order_id')
+            ->join('products as p', 'p.id', '=', 'od.product_id')
+            ->where('username', $username)->orderByDesc('order_date')
+            ->select(
+                'od.id as order_id',
+                'o.order_date',
+                'o.status',
+                'p.image_url',
+                'p.name',
+                'p.price as unitPrice',
+                'od.quantity as num',
+                'od.price as flowPrice'
+            )
+            ->get();
+        foreach ($orders as $order) {
+            $order->image_url = url('storage/images/' . $order->image_url); // Gán URL cho thuộc tính image_url
+        }
+        $data['orders'] = $orders;
+        return $this->sendResponse($data, 'Lấy dữ liệu thành công');
     }
 }

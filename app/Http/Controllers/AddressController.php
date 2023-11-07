@@ -10,7 +10,7 @@ class AddressController extends Controller
     public function index()
     {
         $provices = DB::select("SELECT full_name,code FROM provinces");
-        return $this->sendResponse('Lấy dữ liệu thành công', $provices);
+        return $this->sendResponse($provices, 'Lấy dữ liệu thành công');
     }
 
     public function getDistrictByProvince(Request $request)
@@ -18,7 +18,7 @@ class AddressController extends Controller
         $province_code = $request->input('province_code');
         if ($request->input('province_code')) {
             $district = DB::select("SELECT full_name,code FROM districts WHERE province_code = " . $province_code);
-            return $this->sendResponse('Lấy dữ liệu thành công', $district);
+            return $this->sendResponse($district, 'Lấy dữ liệu thành công');
         }
         return $this->sendError('Lỗi chưa truyền $province_code');
     }
@@ -28,7 +28,7 @@ class AddressController extends Controller
         $province_code = $request->input('district_code');
         if ($request->input('district_code')) {
             $district = DB::select("SELECT full_name,code FROM wards WHERE district_code = " . $province_code);
-            return $this->sendResponse('Lấy dữ liệu thành công', $district);
+            return $this->sendResponse($district, 'Lấy dữ liệu thành công');
         }
         return $this->sendError('Lỗi chưa truyền district_code');
     }

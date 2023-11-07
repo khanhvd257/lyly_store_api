@@ -29,6 +29,7 @@ class OrderValidation extends FormRequest
             'product_id' => 'required|integer',
             'quantity' => 'required|integer|min:1',
             'delivery_address' => 'required|string',
+            'note' => 'required|string',
         ];
     }
 

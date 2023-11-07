@@ -14,9 +14,9 @@ class Controller extends BaseController
     public function sendResponse($result, $message)
     {
         $response = [
+            'message' => $message,
             'success' => true,
             'data' => $result,
-            'message' => $message,
         ];
         return response()->json($response, 200);
     }
