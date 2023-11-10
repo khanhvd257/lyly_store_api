@@ -23,15 +23,18 @@ class Product extends Model
         static::addGlobalScope('active', function ($builder) {
             if (request()->method() !== 'PUT')
                 $builder->where('products.delete_flag', 0);
-            $builder->orderBy('created_at', 'desc');
+            $builder->orderBy('products.created_at', 'desc');
         });
         static::retrieved(function ($product) {
             if ($product->image_url)
                 return $product->image_url = url('storage/images/' . $product->image_url);
 
         });
+    }
 
-
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
     }
 
 

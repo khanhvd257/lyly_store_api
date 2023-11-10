@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CartValidation;
+use App\Http\Requests\OrderFromCart;
 use App\Http\Requests\OrderValidation;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -100,24 +103,10 @@ class CartController extends Controller
     }
 
     // Chuyen tu 1 gio hang sang order
-    public function changeToOrder(Request $request)
+    public function changeToOrder(OrderFromCart $request)
     {
-        $username = Auth::guard('api')->user()['username'];
-        $request['username'] = $username;
-        $newOrder = Order::create($request->all());
-        $newOrder->save();
-        $ids = $request['selectIds'];
-        foreach ($ids as $id) {
-            $cart = Cart::find($id);
-            // Tạo một mục đặt hàng chi tiết (OrderDetail)
-            $orderDetail = new OrderDetail();
-            $orderDetail->order_id = $newOrder->id; // Sử dụng ID của đơn hàng mới
-            $orderDetail->product_id = $cart->product_id;
-            $orderDetail->quantity = $cart->quantity;
-            $orderDetail->price = $cart->total;
-            $orderDetail->save();
-            // Xóa sản phẩm đã chuyển sang đơn hàng khỏi bảng Cart
-            $cart->delete();
-        }
+        // Bắt đầu một giao dịch để đảm bảo tính toàn vẹn của dữ liệu
+
+
     }
 }

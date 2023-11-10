@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use mysql_xdevapi\Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class CustomerController extends Controller
@@ -89,14 +92,25 @@ class CustomerController extends Controller
      * @param Customer $customers
      * @return JsonResponse
      */
-    public function update(Request $request, Customer $customers): JsonResponse
+    public function updateUser(Request $request): JsonResponse
     {
-        // Cập nhật danh mục
+
+        if ($request['avatar'] && str_contains($request['avatar'],'storage/temp')) {
+            $image = basename($request['avatar']);
+            $sourcePath = public_path('storage/temp/' . $image);
+            $destinationPath = public_path('storage/images/');
+            $newFilename = basename($sourcePath);
+            $status = File::move($sourcePath, $destinationPath . $newFilename);
+            if ($status) {
+                $request['avatar'] = $newFilename;
+                File::delete(public_path($sourcePath));
+            }
+        }
+        $username = Auth::guard('api')->user()['username'];
+
+        $customers = Customer::where('username', $username)->first();
         $customers->update($request->all());
-        return response()->json([
-            'status' => true,
-            'old' => [$request->all()],
-            'data' => $customers]);
+        return $this->sendResponse($customers, 'Thay đổi thông tin thành công');
     }
 
     public function changeStatus($id, Request $request)
@@ -134,7 +148,8 @@ class CustomerController extends Controller
         return response(null, 204);
     }
 
-    public function getInfoUser(Request $request){
+    public function getInfoUser(Request $request)
+    {
         echo "Hello";
     }
 

@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Laravel\Passport\Passport;
 
@@ -95,6 +96,18 @@ class ProductController extends Controller
     }
 
 
+    public function getDetaiProduct($id)
+    {
+
+        $products = Product::leftJoin(DB::raw('(SELECT od.product_id, SUM(od.quantity) as total_sold FROM order_details od GROUP BY od.product_id) AS sl'), 'sl.product_id', '=', 'products.id')
+            ->leftJoin(DB::raw('(SELECT r.product_id, AVG(r.rating) as avg_rating FROM ratings r GROUP BY r.product_id) AS rt'), 'rt.product_id', '=', 'products.id')
+            ->select('products.*', DB::raw('COALESCE(sl.total_sold, 0) as total_sold'), DB::raw('COALESCE(rt.avg_rating, 0) as avg_rating'))
+            ->where('products.id', $id)->first();
+        if ($products->count() > 0) return $this->sendResponse($products, 'Lấy thông tin sản phẩm thành công');
+        return $this->sendResponse([], 'Không có thông tin sản phẩm');
+    }
+
+
     /**
      * @param Request $request
      * @param Product $product
@@ -142,6 +155,26 @@ class ProductController extends Controller
     {
         $product->delete();
         return response(null, 204);
+    }
+
+    public function getAllProductBuyer(Request $request)
+    {
+        $products = Product::leftJoin(DB::raw('(SELECT od.product_id, SUM(od.quantity) as total_sold FROM order_details od GROUP BY od.product_id) AS sl'), 'sl.product_id', '=', 'products.id')
+            ->leftJoin(DB::raw('(SELECT r.product_id, FORMAT(AVG(r.rating),1) as avg_rating FROM ratings r GROUP BY r.product_id) AS rt'), 'rt.product_id', '=', 'products.id')
+            ->select('products.*', DB::raw('COALESCE(sl.total_sold, 0) as total_sold'), DB::raw('COALESCE(rt.avg_rating, 0) as avg_rating'));
+        $message = 'Lấy danh sách sản phẩm thành công';
+        // Lấy số lượng sản phẩm theo đánh giá
+        if ($request->has('favorite')) {
+            $products = $products->orderByDesc('rt.avg_rating')->limit(5);
+            $message = 'Lấy danh sách sản phẩm yêu thích thành công';
+        }
+        // Lấy số lượng sản phẩm theo lượt bán
+        if ($request->has('bestSelling')) {
+            $products = $products->orderByDesc('sl.total_sold')->limit(5);
+            $message = 'Lấy danh sách sản phẩm nhieiều lượt bán thành công';
+        }
+        $products = $products->get();
+        return $this->sendResponse($products, $message);
     }
 
 
