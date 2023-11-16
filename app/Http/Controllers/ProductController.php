@@ -159,22 +159,55 @@ class ProductController extends Controller
 
     public function getAllProductBuyer(Request $request)
     {
-        $products = Product::leftJoin(DB::raw('(SELECT od.product_id, SUM(od.quantity) as total_sold FROM order_details od GROUP BY od.product_id) AS sl'), 'sl.product_id', '=', 'products.id')
+        $query = Product::query();
+        $products = $query->leftJoin(DB::raw('(SELECT od.product_id, SUM(od.quantity) as total_sold FROM order_details od GROUP BY od.product_id) AS sl'), 'sl.product_id', '=', 'products.id')
             ->leftJoin(DB::raw('(SELECT r.product_id, FORMAT(AVG(r.rating),1) as avg_rating FROM ratings r GROUP BY r.product_id) AS rt'), 'rt.product_id', '=', 'products.id')
             ->select('products.*', DB::raw('COALESCE(sl.total_sold, 0) as total_sold'), DB::raw('COALESCE(rt.avg_rating, 0) as avg_rating'));
         $message = 'Lấy danh sách sản phẩm thành công';
+
+        if ($request->has('category_id')) {
+            $products = $products->where('category_id', '=', $request['category_id']);
+            $message = 'Các sản phẩm liên quan' . $request['search_key'];
+        }
+        if ($request->has('price')) {
+            $products = $products->where('price', '<=', $request['price']);
+        }
+        if ($request->has('search_key')) {
+            $keywords = explode(' ', $request['search_key']);
+            $products = $products->where(function ($query) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $query->orWhere('name', 'LIKE', "% {$keyword} %");
+                }
+            })
+                ->orWhere('description', 'LIKE', "%{$request['search_key']}%");
+        }
+        if ($request->has('category_id')) {
+            $products = $products->where('products.category_id', '=', $request['category_id']);
+        }
+
+        if ($request->has('rating')) {
+            $products = $products->where('rt.avg_rating', '>=', $request['rating']);
+        }
+
         // Lấy số lượng sản phẩm theo đánh giá
-        if ($request->has('favorite')) {
+        if ($request->has('favorite') && $request['favorite'] == true) {
             $products = $products->orderByDesc('rt.avg_rating')->limit(5);
             $message = 'Lấy danh sách sản phẩm yêu thích thành công';
         }
         // Lấy số lượng sản phẩm theo lượt bán
-        if ($request->has('bestSelling')) {
+        if ($request->has('bestSelling') && $request['bestSelling'] == true) {
             $products = $products->orderByDesc('sl.total_sold')->limit(5);
-            $message = 'Lấy danh sách sản phẩm nhieiều lượt bán thành công';
+            $message = 'Lấy danh sách sản phẩm nhiều lượt bán thành công';
         }
+
         $products = $products->get();
         return $this->sendResponse($products, $message);
+    }
+
+    public function getTop5NewProduct()
+    {
+        $product = Product::orderByDesc('created_at')->limit(5)->get();
+        return $this->sendResponse($product, 'Top 5 sản phẩm mới ra mắt');
     }
 
 

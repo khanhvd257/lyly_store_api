@@ -95,7 +95,7 @@ class CustomerController extends Controller
     public function updateUser(Request $request): JsonResponse
     {
 
-        if ($request['avatar'] && str_contains($request['avatar'],'storage/temp')) {
+        if ($request['avatar'] && str_contains($request['avatar'], 'storage/temp')) {
             $image = basename($request['avatar']);
             $sourcePath = public_path('storage/temp/' . $image);
             $destinationPath = public_path('storage/images/');
@@ -105,6 +105,9 @@ class CustomerController extends Controller
                 $request['avatar'] = $newFilename;
                 File::delete(public_path($sourcePath));
             }
+        }
+        if ($request['avatar'] && str_contains($request['avatar'], 'storage/images')) {
+            $request['avatar'] = basename($request['avatar']);
         }
         $username = Auth::guard('api')->user()['username'];
 

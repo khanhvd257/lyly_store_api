@@ -21,7 +21,9 @@ class Category extends Model
     {
         parent::boot(); //
         static::retrieved(function ($category) {
-            $category->image_url = asset('storage/images/' . $category->image_name);
+            if ($category->image_name) {
+                $category->image_url = asset('storage/images/' . $category->image_name);
+            }
         });
     }
 

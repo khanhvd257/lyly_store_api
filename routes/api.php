@@ -78,9 +78,24 @@ Route::get('product-detail/{id}', 'ProductController@getDetaiProduct');
 
 Route::get('products', 'ProductController@getAllProductBuyer');
 
+Route::get('recommend', 'ProductController@getTop5NewProduct');
+
 //api lấy tỉnh
 Route::get('provices', 'AddressController@index');
 Route::get('districts', 'AddressController@getDistrictByProvince');
 Route::get('wards', 'AddressController@getWardsByDistrict');
 
-
+//
+//Route::get('/link', function () {
+//    $target = storage_path('app/public');  // Sử dụng hàm storage_path để có đường dẫn đầy đủ
+//    $shortcut = public_path('storage');   // Sử dụng hàm public_path để có đường dẫn đầy đủ
+//
+//    // Kiểm tra xem liên kết đã tồn tại chưa
+//    if (!file_exists($shortcut)) {
+//        // Tạo liên kết tượng trưng
+//        symlink($target, $shortcut);
+//        return 'Liên kết đã được tạo thành công!';
+//    } else {
+//        return 'Liên kết đã tồn tại!';
+//    }
+//});
