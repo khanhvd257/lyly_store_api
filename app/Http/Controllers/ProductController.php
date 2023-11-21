@@ -113,14 +113,31 @@ class ProductController extends Controller
      * @param Product $product
      * @return JsonResponse
      */
-    public function update(Request $request, Product $product): JsonResponse
+    public function update($id, Request $request, Product $product): JsonResponse
     {
-        // Cập nhật danh mục
-        $product->update($request->all());
-        return response()->json([
-            'status' => true,
-            'old' => [$request->all()],
-            'data' => $product]);
+        $product = Product::find($id);
+        if (!$product) {
+            $this->sendError('Không thấy sản phẩm');
+        }
+
+        if ($request['image_url'] && str_contains($request['image_url'], 'storage/temp')) {
+            $image = basename($request['image_url']);
+            $sourcePath = public_path('storage/temp/' . $image);
+            $destinationPath = public_path('storage/images/');
+            $newFilename = basename($sourcePath);
+            $status = File::move($sourcePath, $destinationPath . $newFilename);
+            if ($status) {
+                $request['image_url'] = $newFilename;
+                File::delete(public_path($sourcePath));
+            }
+        }
+        if ($request['image_url'] && str_contains($request['image_url'], 'storage/images')) {
+            $request['image_url'] = basename($request['image_url']);
+        } else {
+            $request['image_url'] = basename($request['image_url']);
+        }
+        $dataP = $product->update($request->all());
+        return $this->sendResponse($dataP, 'Sửa thành công');
     }
 
     public function changeStatus($id, Request $request)
@@ -160,7 +177,8 @@ class ProductController extends Controller
     public function getAllProductBuyer(Request $request)
     {
         $query = Product::query();
-        $products = $query->leftJoin(DB::raw('(SELECT od.product_id, SUM(od.quantity) as total_sold FROM order_details od GROUP BY od.product_id) AS sl'), 'sl.product_id', '=', 'products.id')
+        $products = $query->leftJoin(DB::raw('(SELECT od.product_id, SUM(od.quantity) as total_sold FROM order_details od
+        join orders o on o.id = od.order_id  WHERE o.status = "Done" GROUP BY od.product_id) AS sl'), 'sl.product_id', '=', 'products.id')
             ->leftJoin(DB::raw('(SELECT r.product_id, FORMAT(AVG(r.rating),1) as avg_rating FROM ratings r GROUP BY r.product_id) AS rt'), 'rt.product_id', '=', 'products.id')
             ->select('products.*', DB::raw('COALESCE(sl.total_sold, 0) as total_sold'), DB::raw('COALESCE(rt.avg_rating, 0) as avg_rating'));
         $message = 'Lấy danh sách sản phẩm thành công';
