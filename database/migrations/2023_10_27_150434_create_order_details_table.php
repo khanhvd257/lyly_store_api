@@ -19,6 +19,7 @@ class CreateOrderDetailsTable extends Migration
             $table->unsignedBigInteger('product_id');
             $table->integer('quantity');
             $table->decimal('price', 10, 0);
+            $table->boolean('isRating')->default(false);
             $table->boolean('delete_flag')->default(false);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

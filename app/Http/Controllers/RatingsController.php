@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RatingValidation;
 use App\Http\Requests\ReplyRatingValidation;
+use App\Models\OrderDetail;
 use App\Models\Ratings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,7 +42,12 @@ class RatingsController extends Controller
             $request['image_name'] = null;
         }
         $rating = Ratings::create($request->all());
-        if ($rating) return $this->sendResponse($rating, 'Đánh giá sản phẩm thành công');
+        if ($rating) {
+            $oDetail = OrderDetail::find($request['order_id']);
+            $oDetail['isRating'] = 1;
+            $oDetail->save();
+            return $this->sendResponse($rating, 'Đánh giá sản phẩm thành công');
+        }
         return $this->sendError('Xảy ra lỗi khi đánh giá');
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -17,7 +18,7 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         $query = Customer::query();
-
+        $query->join('accounts','accounts.username','=','customers.username');
         if ($request->has('phone')) {
             $query->where('phone', $request->input('phone'));
         }
@@ -82,7 +83,7 @@ class CustomerController extends Controller
 
                 'data' => $customers]);
         } else {
-            return response()->json(['message' => 'Sản phẩm không tồn tại.'], 404);
+            return response()->json(['message' => 'Người dùng không tồn tại.'], 404);
         }
     }
 
@@ -116,12 +117,12 @@ class CustomerController extends Controller
         return $this->sendResponse($customers, 'Thay đổi thông tin thành công');
     }
 
-    public function changeStatus($id, Request $request)
+    public function changeStatus($username, Request $request)
     {
-        $customers = Customer::find($id);
+        $customers = User::find($username);
 
         if (!$customers) {
-            return response()->json(['message' => 'Sản phẩm có id = ' . $id . ' không tồn tại'], 404);
+            return $this->sendError('người dùng có username = ' . $username . ' không tồn tại');
         }
         $customers->status = $request->input('status');
         $customers->save();

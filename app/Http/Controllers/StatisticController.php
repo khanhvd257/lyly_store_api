@@ -101,4 +101,18 @@ class StatisticController extends Controller
 
     }
 
+    public function getorderDone()
+    {
+        $orders = Order::query();
+        $orders->where('status', 'Done');
+        $orders = $orders->with('orderDetails')->get();
+        foreach ($orders as $order) {
+            $totalPrice = $order->orderDetails->sum(function ($orderDetail) {
+                return $orderDetail->price;
+            });
+            $order->total_price = $totalPrice;
+        }
+        return $this->sendResponse($orders, 'Thanh cong');
+    }
+
 }

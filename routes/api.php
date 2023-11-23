@@ -67,8 +67,9 @@ Route::middleware('auth:api')->group(function () {
 });
 Route::get('statistic', 'StatisticController@statisticYear');
 Route::get('statistic/product', 'StatisticController@getDetailProductIn12Month');
+Route::get('statistic/revenue', 'StatisticController@getorderDone');
 Route::get('statistic/order', 'StatisticController@statistics');
-Route::get('statistic/doanh-thu', 'StatisticController@getRevenueByMonth');
+Route::get('statistic/overview', 'StatisticController@getRevenueByMonth');
 Route::get('rating-product/{product_id?}', 'RatingsController@getRatingByProduct');
 
 //api account

@@ -120,6 +120,7 @@ class ProductController extends Controller
             $this->sendError('Không thấy sản phẩm');
         }
 
+
         if ($request['image_url'] && str_contains($request['image_url'], 'storage/temp')) {
             $image = basename($request['image_url']);
             $sourcePath = public_path('storage/temp/' . $image);
@@ -159,7 +160,8 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['message' => 'Sản phẩm có id = ' . $id . ' không tồn tại'], 404);
         }
-        $product->delete_flag = $request->input('delete_flag');
+        $product['image_url'] = basename($product['image_url']);
+        $product['delete_flag'] = 1;
         $product->save();
         return response()->json(['message' => 'Cập nhật trạng thái delete_flag = ' . $product->delete_flag . ' của sản phẩm thành công'], 201);
     }

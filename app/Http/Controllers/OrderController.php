@@ -90,11 +90,28 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAllOrder()
+    public function getAllOrder(Request $request)
 
     {
-        $orders = OrderDetail::with('product')->with('order')->get();
-        return $this->sendResponse($orders, 'Lấy dữ liệu thành công');
+        {
+            $query = Order::query();
+            $status = $request['status'];
+            $order_id = $request['order_id'];
+            if ($status !== null && $status !== '') {
+                $query->where('status', $status);
+            }
+            if ($order_id !== null && $order_id !== '') {
+                $query->where('id', $order_id);
+            }
+            $orders = $query->with('orderDetails.product')->get();
+            foreach ($orders as $order) {
+                $totalPrice = $order->orderDetails->sum(function ($orderDetail) {
+                    return $orderDetail->price;
+                });
+                $order->total_price = $totalPrice;
+            }
+            return $this->sendResponse($orders, 'lấy dữ liệu thành công nha');
+        }
     }
 
     /**
@@ -207,7 +224,7 @@ class OrderController extends Controller
             });
             $order->total_price = $totalPrice;
         }
-        return $this->sendResponse($orders, 'lấy dữ liệu thành công');
+        return $this->sendResponse($orders, 'lấy dữ liệu thành công nha');
     }
 
 }
